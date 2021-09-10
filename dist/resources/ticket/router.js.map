@@ -1,0 +1,1 @@
+{"version":3,"file":"router.js","sourceRoot":"","sources":["../../../src/resources/ticket/router.ts"],"names":[],"mappings":";;AAAA,qCAAiC;AACjC,6CAA2E;AAE3E,MAAM,MAAM,GAAG,IAAA,gBAAM,GAAE,CAAC;AAExB,MAAM,CAAC,GAAG,CAAC,MAAM,EAAE,0BAAa,CAAC,CAAA;AACjC,MAAM,CAAC,GAAG,CAAC,GAAG,EAAE,0BAAa,CAAC,CAAA;AAC9B,MAAM,CAAC,KAAK,CAAC,MAAM,EAAE,0BAAa,CAAC,CAAA;AAEnC,kBAAe,MAAM,CAAA"}

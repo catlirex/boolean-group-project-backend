@@ -1,0 +1,160 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialActions", "selectRelationCount"]
+}
+
+//Airport
+model Airport {
+  id               String         @id
+  name             String
+  city             String
+  country          String
+  cityImage        String
+  departureAirport FlightNumber[] @relation("departureAirport")
+  arrivalAirport   FlightNumber[] @relation("arrivalAirport")
+}
+
+// Aircraft
+model Aircraft {
+  id                   String         @id
+  econSeatNumber       Int
+  businessSeatNumber   Int
+  firstClassSeatNumber Int
+  flightNumber         FlightNumber[]
+}
+
+//Airline
+model Airline {
+  id                String         @id
+  name              String
+  economicLuggage   Int
+  businessLuggage   Int
+  firstClassLuggage Int
+  flightNumber      FlightNumber[]
+}
+
+// Flight Number
+
+model FlightNumber {
+  id                 String            @id
+  durationHour       Int
+  airlineId          String
+  airline            Airline           @relation(fields: [airlineId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  departureAirportId String
+  departureAirport   Airport           @relation("departureAirport", fields: [departureAirportId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  arrivalAirportId   String
+  arrivalAirport     Airport           @relation("arrivalAirport", fields: [arrivalAirportId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  aircraftId         String
+  aircraft           Aircraft          @relation(fields: [aircraftId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  ScheduledFlight    ScheduledFlight[]
+}
+
+enum FlightStatus {
+  SCHEDULED
+  BOARDING
+  CHECKIN
+  FINALCALL
+  DELAYED
+  CANCELLED
+  DEPARTED
+  ARRIVED
+}
+
+//Scheduled Flight
+model ScheduledFlight {
+  id              Int          @id @default(autoincrement())
+  date            Int
+  time            String
+  economicPrice   Float
+  businessPrice   Float
+  firstClassPrice Float
+  status          FlightStatus @default(SCHEDULED)
+  gateNumber      String
+  flightNumberId  String
+  flightNumber    FlightNumber @relation(fields: [flightNumberId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  passengers      Ticket[]
+}
+
+// Enum Users
+enum Role {
+  USER
+  STAFF
+}
+
+// User
+model User {
+  id        Int    @id @default(autoincrement())
+  role      Role   @default(USER)
+  firstName String
+  lastName  String
+  password  String
+
+  email   String    @unique
+  booking Booking[]
+}
+
+// Booking
+
+model Booking {
+  id               Int                @id @default(autoincrement())
+  userId           Int
+  user             User               @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  tickets          Ticket[]
+  BookExtraLuggage BookExtraLuggage[]
+}
+
+// Enum Ticket
+
+enum TicketStatus {
+  CONFIRMED
+  ONLINECHECKIN
+  LUGGAGECHECKIN
+  ONBOARD
+  CANCELLED
+}
+
+// Ticket
+
+model Ticket {
+  id                 Int             @id @default(autoincrement())
+  class              String
+  passengerFirstName String?
+  passengerLastName  String?
+  specialMeal        String?
+  seatNumer          String?
+  status             TicketStatus    @default(CONFIRMED)
+  passpostNumber     String?
+  Booking            Booking         @relation(fields: [bookingId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  bookingId          Int
+  scheduledFlight    ScheduledFlight @relation(fields: [scheduledFlightId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  scheduledFlightId  Int
+}
+
+// Extra  Luggage
+
+model ExtraLuggage {
+  id               Int                @id @default(autoincrement())
+  weight           Int
+  price            Float
+  bookExtraLuggage BookExtraLuggage[]
+}
+
+//BookExtraLuggage
+
+model BookExtraLuggage {
+  id             Int          @id @default(autoincrement())
+  bookingId      Int
+  Booking        Booking      @relation(fields: [bookingId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  quantity       Int
+  extraLuggageId Int
+  ExtraLuggage   ExtraLuggage @relation(fields: [extraLuggageId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}

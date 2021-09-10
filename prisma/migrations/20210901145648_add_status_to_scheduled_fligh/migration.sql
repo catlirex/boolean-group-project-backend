@@ -1,0 +1,5 @@
+-- CreateEnum
+CREATE TYPE "FlightStatus" AS ENUM ('SCHEDULED', 'BOARDING', 'CHECKIN', 'FINALCALL', 'DELAYED', 'CANCELLED', 'DEPARTED', 'ARRIVED');
+
+-- AlterTable
+ALTER TABLE "ScheduledFlight" ADD COLUMN     "status" "FlightStatus" NOT NULL DEFAULT E'SCHEDULED';
